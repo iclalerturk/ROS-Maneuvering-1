@@ -1,0 +1,32 @@
+<?xml version="1.0"?>
+<launch>
+
+	<arg name="gui" default="true"/>
+	<arg name="verbose" default="false"/>
+	<arg name="world_name" default="rtg-20242-odev1.world"/>
+	<arg name="robot_name" default="p3at"/>
+	
+	<param name="/use_sim_time" value="true" />
+	<param name="robot_description_$(arg robot_name)" command="$(find xacro)/xacro '$(find p3at_description)/urdf/pioneer3at.urdf.xacro' robot_name:=$(arg robot_name)" />
+
+	<node name="gazebo" pkg="gazebo_ros" type="gzserver" respawn="false"
+  		output="screen" args="$(find hector_nist_arena_worlds)/worlds/$(arg world_name)"/> <!-- -u -->
+	
+	<group if="$(arg gui)">
+		<node name="gazebo_gui" pkg="gazebo_ros" type="gzclient" respawn="false" output="screen"/>
+	</group>
+	<group ns="p3at">
+		<node pkg="gazebo_ros" type="spawn_model" name="spawn_model" args="-urdf -param /robot_description_$(arg robot_name) -model pioneer3at_$(arg robot_name) -x 0.0 -y 0.3 -z 0.0" />
+		<node name="trajectory" pkg="odev1" type="trajectory"/>
+		<node name="autonomy" pkg="odev1" type="auto"/>
+	</group>
+
+	<node pkg="robot_state_publisher" type="robot_state_publisher" name="robot_state_publisher">
+    		<remap from="robot_description" to="robot_description_$(arg robot_name)" />
+  	</node>  
+  	
+  	<node name="rviz" pkg="rviz" type="rviz" args="-d $(find odev1)/rviz/odev1.rviz"/>
+  	
+  	<node pkg="tf" type="static_transform_publisher" name="map2odom" args="0 0 0 0 0 0 1 map p3at/odom 100" />
+  	<node pkg="tf" type="static_transform_publisher" name="map2traj" args="0 0 0 0 0 0 1 map p3at/trajectory  100" />
+</launch>
