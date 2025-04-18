@@ -1,0 +1,6 @@
+[submodule "odev1/hector_nist_arenas_gazebo"]
+	path = odev1/hector_nist_arenas_gazebo
+	url = https://github.com/iclalerturk/hector_nist_arenas_gazebo.git
+[submodule "odev1/pioneer3at_demo"]
+	path = odev1/pioneer3at_demo
+	url = https://github.com/iclalerturk/pioneer3at_demo.git
